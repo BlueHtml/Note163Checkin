@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30406.217
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Note163Checkin", "Note163Checkin.csproj", "{684A6257-61E6-41C2-BFA6-8984371BA115}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{684A6257-61E6-41C2-BFA6-8984371BA115}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{684A6257-61E6-41C2-BFA6-8984371BA115}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{684A6257-61E6-41C2-BFA6-8984371BA115}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{684A6257-61E6-41C2-BFA6-8984371BA115}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {1323694E-B9EC-4C9D-B3FB-C4CB93DA25F0}
+	EndGlobalSection
+EndGlobal

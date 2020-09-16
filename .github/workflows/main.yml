@@ -1,0 +1,28 @@
+name: Run
+
+on:
+  watch:
+    types: [started]
+  schedule:
+    - cron:  '0 1 * * *'
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@main
+    - name: Wait
+      run: |
+        random_time=$(($RANDOM % 45))
+        echo "等待 ${random_time} 分钟后开始执行"
+        for((i=1;i<=${random_time};i++));  
+        do
+        echo "倒计时:剩余 $[${random_time}-$i] 分钟"
+        sleep 1m
+        done
+    - name: Run
+      run: dotnet run
+      env: 
+        CONF: ${{ secrets.CONF }}
