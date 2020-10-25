@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Net.Http;
+using System.Security.Cryptography;
+using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 
@@ -18,25 +20,30 @@ namespace Note163Checkin
                 _scClient = new HttpClient();
             }
 
-            using var client = new HttpClient();
-            client.DefaultRequestHeaders.Add("User-Agent", "ynote-android");
             Console.WriteLine("有道云笔记签到开始运行...");
-
             for (int i = 0; i < _conf.Users.Length; i++)
             {
                 User user = _conf.Users[i];
-                string title = $" 账号 {i + 1}: {user.Name} ";
+                string title = $"账号 {i + 1}: {user.Task} ";
                 Console.WriteLine($"共 {_conf.Users.Length} 个账号，正在运行{title}...");
 
-                client.DefaultRequestHeaders.Remove("Cookie");
-                client.DefaultRequestHeaders.Add("Cookie", user.Cookie);
+                using var client = new HttpClient();
+                client.DefaultRequestHeaders.Add("User-Agent", "ynote-android");
+
+                //登录账号
+                var rspMsg = await client.PostAsync("https://note.youdao.com/login/acc/urs/verify/check?app=web&product=YNOTE&tp=urstoken&cf=6&fr=1&systemName=&deviceType=&ru=https%3A%2F%2Fnote.youdao.com%2FsignIn%2F%2FloginCallback.html&er=https%3A%2F%2Fnote.youdao.com%2FsignIn%2F%2FloginCallback.html&vcode=&systemName=Windows&deviceType=WindowsPC", new StringContent($"username={user.Username}&password={MD5Hash(user.Password)}", Encoding.UTF8, "application/x-www-form-urlencoded"));
+                if (rspMsg.RequestMessage.RequestUri.AbsoluteUri.Contains("ecode"))
+                {//登录失败
+                    await Notify($"{title}登录失败，请检查账号密码是否正确！或者在网页上登录后再次运行本程序！", true);
+                    continue;
+                }
 
                 //每日打开客户端（即登陆）
                 string result = await (await client.PostAsync("https://note.youdao.com/yws/api/daupromotion?method=sync", null))
                     .Content.ReadAsStringAsync();
                 if (result.Contains("error", StringComparison.OrdinalIgnoreCase))
                 {//Cookie失效
-                    await Notify($"{title}Cookie失效，请及时更新！", true);
+                    await Notify($"{title}Cookie失效，请检查登录状态！", true);
                     continue;
                 }
 
@@ -69,6 +76,17 @@ namespace Note163Checkin
             Console.WriteLine("签到运行完毕");
         }
 
+        static string MD5Hash(string str)
+        {
+            StringBuilder sbHash = new StringBuilder(32);
+            byte[] s = MD5.Create().ComputeHash(Encoding.UTF8.GetBytes(str));
+            for (int i = 0; i < s.Length; i++)
+            {
+                sbHash.Append(s[i].ToString("x2"));
+            }
+            return sbHash.ToString();
+        }
+
         static async Task Notify(string msg, bool isFailed = false)
         {
             Console.WriteLine(msg);
@@ -99,8 +117,9 @@ namespace Note163Checkin
 
     public class User
     {
-        public string Name { get; set; }
-        public string Cookie { get; set; }
+        public string Task { get; set; }
+        public string Username { get; set; }
+        public string Password { get; set; }
     }
 
     #endregion

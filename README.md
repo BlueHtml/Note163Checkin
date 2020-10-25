@@ -1,7 +1,5 @@
 # Note163Checkin
 
-**并非全自动，需要使用Fiddler或其他抓包工具获取到Cookie**
-
 ## 一、Fork 仓库
 
 **点击右上角的`Fork`**
@@ -14,11 +12,13 @@
     ```json
     {
     	"Users": [{
-    			"Name": "CC", //自定义名字，选填
-    			"Cookie": "YNOTE_LOGIN=true; YNOTE_SESS=v2|abc" //有道云笔记客户端抓包的cookie
+    			"Task": "CC", //自定义名字，选填
+    			"Username": "abc@163.com", //账号
+    			"Password": "aaa" //密码
     		}, {
-    			"Name": "MM",
-    			"Cookie": "YNOTE_LOGIN=true; YNOTE_SESS=v2|123"
+    			"Task": "MM",
+    			"Username": "123@163.com",
+    			"Password": "111"
     		}
     	],
     	"ScKey": "", //server酱sckey，不填不开启
@@ -41,12 +41,12 @@
 
 ## 四、查看运行结果
 
-**`Actions`->`Checkin`->`build`**，能看到下图，表示运行成功（注意：由于 .NET Core会输出默认日志，请**滚动到最下面查看实际运行结果**）
+**`Actions`->`Run`->`build`**，能看到下图，表示运行成功（注意：由于 .NET Core会输出默认日志，请**滚动到最下面查看实际运行结果**）
 ![查看Action运行记录](https://img.guoqianfan.com/note/2020/08/查看action运行记录.png)
 
 ## 注意事项
 
-并非全自动，需要使用Fiddler或其他抓包工具获取到Cookie。
+24小时内频繁登录可能会触发验证，程序就会登录失败。此时需要在网页上手动登录一次（需要输入验证码），登录成功后再次运行本程序即可。
 
 每天运行一次，在上午9:00-9:45之间。
 

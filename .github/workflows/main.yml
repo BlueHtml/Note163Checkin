@@ -9,11 +9,13 @@ on:
 jobs:
   build:
 
+    if: github.actor == github.repository_owner
     runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@main
     - name: Wait
+      if: github.event_name != 'watch'
       run: |
         random_time=$(($RANDOM % 45))
         echo "等待 ${random_time} 分钟后开始执行"
