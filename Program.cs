@@ -29,33 +29,44 @@ for (int i = 0; i < _conf.Users.Length; i++)
     string cookie = string.Empty;
     bool isInvalid = true; string result = string.Empty;
 
-    string redisKey = $"Note163_{user.Username}";
-    if (isRedis)
+    if (!string.IsNullOrWhiteSpace(user.Cookie))
     {
-        var redisValue = await db.StringGetAsync(redisKey);
-        if (redisValue.HasValue)
-        {
-            cookie = redisValue.ToString();
-            (isInvalid, result) = await IsInvalid(cookie);
-            Console.WriteLine("redis获取cookie,状态:{0}", isInvalid ? "无效" : "有效");
-        }
+        Console.WriteLine("json-cookie存在,开始验证...");
+        cookie = user.Cookie;
+        (isInvalid, result) = await IsInvalid(cookie);
+        Console.WriteLine("json-cookie状态:{0}", isInvalid ? "无效" : "有效");
     }
 
     if (isInvalid)
     {
-        cookie = await GetCookie(user);
-        (isInvalid, result) = await IsInvalid(cookie);
-        Console.WriteLine("login获取cookie,状态:{0}", isInvalid ? "无效" : "有效");
-        if (isInvalid)
-        {//Cookie失效
-            await Notify($"{title}Cookie失效，请检查登录状态！", true);
-            continue;
+        string redisKey = $"Note163_{user.Username}";
+        if (isRedis)
+        {
+            var redisValue = await db.StringGetAsync(redisKey);
+            if (redisValue.HasValue)
+            {
+                cookie = redisValue.ToString();
+                (isInvalid, result) = await IsInvalid(cookie);
+                Console.WriteLine("redis获取cookie,状态:{0}", isInvalid ? "无效" : "有效");
+            }
         }
-    }
 
-    if (isRedis)
-    {
-        Console.WriteLine($"redis更新cookie:{await db.StringSetAsync(redisKey, cookie)}");
+        if (isInvalid)
+        {
+            cookie = await GetCookie(user);
+            (isInvalid, result) = await IsInvalid(cookie);
+            Console.WriteLine("login获取cookie,状态:{0}", isInvalid ? "无效" : "有效");
+            if (isInvalid)
+            {//Cookie失效
+                await Notify($"{title}Cookie失效，请检查登录状态！", true);
+                continue;
+            }
+        }
+
+        if (isRedis)
+        {
+            Console.WriteLine($"redis更新cookie:{await db.StringSetAsync(redisKey, cookie)}");
+        }
     }
 
     #endregion
@@ -114,7 +125,7 @@ async Task<string> GetCookie(User user)
     var browser = await Puppeteer.LaunchAsync(launchOptions);
     IPage page = await browser.DefaultContext.NewPageAsync();
 
-    await page.GoToAsync("https://note.youdao.com/web", TIMEOUT_MS);
+    await page.GoToAsync(_conf.LoginUrl, TIMEOUT_MS);
 
     bool isLogin = false;
     string cookie = "fail";
@@ -202,8 +213,9 @@ class Conf
     public string ScType { get; set; }
     public string RdsServer { get; set; }
     public string RdsPwd { get; set; }
-    public string JsUrl { get; set; } = "https://github.com/BlueHtml/pub/raw/main/code/js/note163login.js";
+    public string LoginUrl { get; set; } = "https://note.youdao.com/mobileSignIn/login_mobile.html?&back_url=https://note.youdao.com/web/&from=web";
     public string LoginStr { get; set; } = "signIn";
+    public string JsUrl { get; set; } = "https://github.com/BlueHtml/pub/raw/main/code/js/note163login.js";
 }
 
 class User
@@ -211,6 +223,7 @@ class User
     public string Task { get; set; }
     public string Username { get; set; }
     public string Password { get; set; }
+    public string Cookie { get; set; }
 }
 
 #endregion
