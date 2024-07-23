@@ -99,7 +99,7 @@ for (int i = 0; i < _conf.Users.Length; i++)
         space += Deserialize<YdNoteRsp>(result).Space;
     }
 
-    await Notify($"有道云笔记{title}签到成功，共获得空间{space / 1048576}M");
+    await Notify($"有道云笔记{title}签到成功，共获得空间 {space / 1048576} M");
 }
 Console.WriteLine("签到运行完毕");
 
@@ -192,7 +192,7 @@ async Task Notify(string msg, bool isFailed = false)
     Console.WriteLine(msg);
     if (_conf.ScType == "Always" || (isFailed && _conf.ScType == "Failed"))
     {
-        await _scClient.GetAsync($"https://sc.ftqq.com/{_conf.ScKey}.send?text={msg}");
+        await _scClient.GetAsync($"https://sc.ftqq.com/{_conf.ScKey}.send?title=有道云笔记账号&desp={msg}");
     }
 }
 
