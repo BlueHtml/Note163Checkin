@@ -99,7 +99,7 @@ for (int i = 0; i < _conf.Users.Length; i++)
         space += Deserialize<YdNoteRsp>(result).Space;
     }
 
-    await Notify($"有道云笔记{title}签到成功，共获得空间 {space / 1048576} M");
+    await Notify($"有道云笔记{title}签到成功，共获得空间{space / 1048576}M");
 }
 Console.WriteLine("签到运行完毕");
 
